@@ -1,59 +1,58 @@
 import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-//34:14
-// textures
-const loadingManager = new THREE.LoadingManager();
-
-// loadingManager.onStart = () => {
-//   console.log('start');
-// };
-
-// loadingManager.onProgress = () => {
-//   console.log('loading');
-// };
-
-// loadingManager.onError = () => {};
-
-const textureLoader = new THREE.TextureLoader(loadingManager);
-const colorTexture = textureLoader.load('/textures/minecraft.png');
-const alphaTexture = textureLoader.load('textures/door/alpha.jpg');
-const heightTexture = textureLoader.load('textures/door/height.jpg');
-const normalTexture = textureLoader.load('textures/door/normal.jpg');
-const ambientTexture = textureLoader.load('textures/door/ambientOcclusion.jpg');
-const metalnessTexture = textureLoader.load('textures/door/metalness.jpg');
-const roughnessTexture = textureLoader.load('textures/door/roughness.jpg');
-
-// colorTexture.repeat.x = 2;
-// colorTexture.repeat.y = 3;
-// colorTexture.wrapS = THREE.RepeatWrapping;
-// colorTexture.wrapT = THREE.RepeatWrapping;
-
-// colorTexture.offset.x = 0.5;
-// colorTexture.offset.y = 0.5;
-
-// colorTexture.rotation = Math.PI / 4;
-// colorTexture.center.x = 0.5;
-// colorTexture.center.y = 0.5;
-
-colorTexture.magFilter = THREE.NearestFilter;
+import * as dat from 'dat.gui';
+import { AxesHelper, TextGeometry } from 'three';
 
 /**
  * Base
  */
+// Debug
+const gui = new dat.GUI();
+
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
 
 // Scene
 const scene = new THREE.Scene();
 
+//axes helper
+
+/**
+ * Textures
+ */
+const textureLoader = new THREE.TextureLoader();
+const matcapTexture = textureLoader.load('/textures/matcaps/1.png');
+
+//$ fonts
+
+const fontLoader = new THREE.FontLoader();
+
+fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
+  const textGeometry = new THREE.TextBufferGeometry('Josh Warren', {
+    font: font,
+    size: 0.5,
+    height: 0.2,
+    curveSegments: 5,
+    bevelEnabled: true,
+    bevelThickness: 0.03,
+    bevelSize: 0.02,
+    bevelOffset: 0,
+    bevelSegments: 4,
+  });
+  textGeometry.center();
+  const textMaterial = new THREE.MeshMatcapMaterial({ matcap: matcapTexture });
+  const text = new THREE.Mesh(textGeometry, textMaterial);
+  scene.add(text);
+});
+
 /**
  * Object
  */
-const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ map: colorTexture });
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
+const cube = new THREE.Mesh(
+  new THREE.BoxBufferGeometry(1, 1, 1),
+  new THREE.MeshBasicMaterial()
+);
 
 /**
  * Sizes
@@ -89,7 +88,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.x = 1;
 camera.position.y = 1;
-camera.position.z = 1;
+camera.position.z = 2;
 scene.add(camera);
 
 // Controls
