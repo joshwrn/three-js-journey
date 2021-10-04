@@ -1,9 +1,9 @@
 import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import * as dat from 'dat.gui';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import * as dat from 'dat.gui';
 
 /**
  * Base
@@ -17,21 +17,19 @@ const canvas = document.querySelector('canvas.webgl');
 // Scene
 const scene = new THREE.Scene();
 
-//$ Models
+/**
+ * Models
+ */
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('/draco/');
 
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
-let mixer;
-gltfLoader.load('/models/Fox/glTF/Fox.gltf', (gltf) => {
-  mixer = new THREE.AnimationMixer(gltf.scene);
-  const action = mixer.clipAction(gltf.animations[2]);
+let mixer = null;
 
-  action.play();
-
-  gltf.scene.scale.set(0.025, 0.025, 0.025);
+gltfLoader.load('/models/hamburger.glb', (gltf) => {
+  console.log(gltf);
   scene.add(gltf.scene);
 });
 
@@ -39,7 +37,7 @@ gltfLoader.load('/models/Fox/glTF/Fox.gltf', (gltf) => {
  * Floor
  */
 const floor = new THREE.Mesh(
-  new THREE.PlaneBufferGeometry(10, 10),
+  new THREE.PlaneBufferGeometry(50, 50),
   new THREE.MeshStandardMaterial({
     color: '#444444',
     metalness: 0,
@@ -99,12 +97,12 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.set(2, 2, 2);
+camera.position.set(-8, 4, 8);
 scene.add(camera);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
-controls.target.set(0, 0.75, 0);
+controls.target.set(0, 1, 0);
 controls.enableDamping = true;
 
 /**
@@ -128,8 +126,10 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - previousTime;
   previousTime = elapsedTime;
-  //update mixer
-  if (mixer) mixer.update(deltaTime);
+
+  if (mixer) {
+    mixer.update(deltaTime);
+  }
 
   // Update controls
   controls.update();

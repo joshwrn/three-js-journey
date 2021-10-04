@@ -7,7 +7,7 @@ import * as CANNON from 'cannon-es';
 /**
  * Debug
  */
-const gui = new dat.GUI();
+const gui = new dat.GUI()
 const debugObj = {};
 
 debugObj.createSphere = () => {
@@ -54,9 +54,13 @@ const hitSound = new Audio('/sounds/hit.mp3');
 
 const playHitSound = (collision, volume, type) => {
   const impactStrength = collision.contact.getImpactVelocityAlongNormal();
-  if (impactStrength < 0.5 || (impactStrength < 0.3 && type === 'sphere'))
+  if (
+    (impactStrength < 0.5 && type === 'box') ||
+    (impactStrength < 0.3 && type === 'sphere')
+  )
     return;
-  const test = impactStrength * volume;
+  const test = impactStrength * volume * 0.8;
+  console.log(test);
   const vol = test < 1 ? test : 1;
   hitSound.volume = vol;
   hitSound.currentTime = 0;
